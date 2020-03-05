@@ -1,8 +1,8 @@
 #include "snowflake.h"
 
 /*
-Ä¬ÈÏÇé¿öÏÂ »úÆ÷ÂëºÍÏß³ÌidÒ»¹²Õ¼ÓÃ10Î»£¬Ê£Óà12Î»²úÉúĞòÁĞºÅ£¬ÄÇÃ´1ºÁÃëµÄÏß³Ì¿ÉÒÔ½¨Á¢4096¸öÁ¬½Ó×ã¹»ÓÃÁË£¬×îµÍ(Ê¹ÓÃ7Î»)Ã¿ºÁÃëĞè²úÉú128¸öĞòÁĞºÅ
-¼´×îµÍ¿ÉÒÔÎªµ¥Ïß³ÌÃ¿ÃëÌá¹©12.8wµÄĞÂ½¨Á¬½ÓĞòÁĞºÅ
+é»˜è®¤æƒ…å†µä¸‹ æœºå™¨ç å’Œçº¿ç¨‹idä¸€å…±å ç”¨10ä½ï¼Œå‰©ä½™12ä½äº§ç”Ÿåºåˆ—å·ï¼Œé‚£ä¹ˆ1æ¯«ç§’çš„çº¿ç¨‹å¯ä»¥å»ºç«‹4096ä¸ªè¿æ¥è¶³å¤Ÿç”¨äº†ï¼Œæœ€ä½(ä½¿ç”¨7ä½)æ¯æ¯«ç§’éœ€äº§ç”Ÿ128ä¸ªåºåˆ—å·
+å³æœ€ä½å¯ä»¥ä¸ºå•çº¿ç¨‹æ¯ç§’æä¾›12.8wçš„æ–°å»ºè¿æ¥åºåˆ—å·
 |0|00000000000000000000000000000000000000000|0000000000|000000000000|
 */
 CSnowFlakeGenerator::CSnowFlakeGenerator(u_int16_t MachineBitNum,u_int16_t ThreadBitNum,u_int16_t ThreadId,u_int16_t MachineCode)
@@ -15,7 +15,8 @@ CSnowFlakeGenerator::CSnowFlakeGenerator(u_int16_t MachineBitNum,u_int16_t Threa
 
 	u16RemainBit = REMAIN_BIT;
 
-	if((u16MachineBitNum+u16ThreadBitNum)>(u16RemainBit-MIN_SEQ_BIT)){
+	if((u16MachineBitNum+u16ThreadBitNum)>(u16RemainBit-MIN_SEQ_BIT))
+	{
 		LOGGER_INFO(formatStr("machine code and thread id is bigger"));
 		u16MachineBitNum = DEFAULT_MACHINE_BIT;
 		u16ThreadBitNum = DEFAULT_THREAD_BIT;
@@ -26,23 +27,20 @@ CSnowFlakeGenerator::CSnowFlakeGenerator(u_int16_t MachineBitNum,u_int16_t Threa
 	
 	i64LastTimeStamp = 0;
 
-	/*ĞòÁĞºÅËùÊ¹ÓÃµÄÎ»Êı*/
+	/*åºåˆ—å·æ‰€ä½¿ç”¨çš„ä½æ•°*/
 	u_int16_t seqbit = u16RemainBit - u16MachineBitNum - u16ThreadBitNum;
 	u64MaxSeq = (1<<seqbit) -1;
 
-	/*»úÆ÷ÂëÆ«ÒÆÎ»*/
+	/*æœºå™¨ç åç§»ä½*/
 	u16MachineOffset = seqbit;
 
-	/*Ïß³ÌIDÆ«ÒÆ*/
+	/*çº¿ç¨‹IDåç§»*/
 	u16ThreadOffset = seqbit + 	u16MachineBitNum;
 
-	/*Ê±¼ä´ÁÆ«ÒÆ*/
+	/*æ—¶é—´æˆ³åç§»*/
 	u16TimeStampOffset = seqbit + u16ThreadBitNum + u16MachineBitNum;
 
-	u64Sequence = 0;
-
-
-	
+	u64Sequence = 0;	
 }
 
 int64_t CSnowFlakeGenerator::GetNextId()
@@ -51,31 +49,36 @@ int64_t CSnowFlakeGenerator::GetNextId()
 	int64_t retval=0;
 	
 	i64CurrentMillSec=GetMillSecTime();
-	if(i64CurrentMillSec < i64LastTimeStamp){
+	if(i64CurrentMillSec < i64LastTimeStamp)
+	{
 		LOGGER_ERROR(formatStr("error time stamp create!!"));
 		return -1;
 	}
 	
-	/*Èç¹ûµ±Ç°ºÁÃëÊ±¼äµÈÓÚÉÏ´ÎºÁÃëÊ±¼ä ÔòÔö¼ÓĞòÁĞºÅ*/
-	if(i64CurrentMillSec == i64LastTimeStamp){
+	/*å¦‚æœå½“å‰æ¯«ç§’æ—¶é—´ç­‰äºä¸Šæ¬¡æ¯«ç§’æ—¶é—´ åˆ™å¢åŠ åºåˆ—å·*/
+	if(i64CurrentMillSec == i64LastTimeStamp)
+	{
 		i64LastTimeStamp = i64CurrentMillSec;
 		u64Sequence ++;
-		if(u64Sequence >= u64MaxSeq){
+		if(u64Sequence >= u64MaxSeq)
+		{
 			GetNextMillSecTime();
 		}
 		
-	}else{
-		//²»µÈÓÚÉÏ´ÎºÁÃëÊ±¼äÔòseq ÖÃ0
+	}else
+	{
+		//ä¸ç­‰äºä¸Šæ¬¡æ¯«ç§’æ—¶é—´åˆ™seq ç½®0
 		i64LastTimeStamp = i64CurrentMillSec;
 		u64Sequence = 0;
 	}
 	//printf("=====%u====%u====%u===%u===",u16TimeStampOffset,u16ThreadOffset,u16MachineOffset,u64Sequence);
-
 	//printf("x1:%d====x2:%u====x3:%u===\n",i64CurrentMillSec-i64StartTimeStamp,u64ThreadId,u64MachineCode);
+	
 	retval = ((i64CurrentMillSec-i64StartTimeStamp)<<u16TimeStampOffset) | \
 		u64ThreadId<< u16ThreadOffset | u64MachineCode<<u16MachineOffset | u64Sequence;
 
 	//printf("================return val:%ld====\n",retval);
+	
 	return retval;
 
 }
