@@ -33,7 +33,7 @@ class CSnowFlakeGenerator
 		
 		u_int16_t u16ThreadOffset;		//线程偏移量
 		u_int16_t u16MachineOffset;		//机器码便宜量
-		u_int16_t u16TimeStampOffset;	//时间戳偏移量
+		u_int16_t u16TimeStampOffset;		//时间戳偏移量
 
 		u_int16_t u16RemainBit;			//预留位数,64 位中第一位不使用，41 位为毫秒级时间戳，后22位为预留给机器码和线程id以及产生的序列号使用
 		
