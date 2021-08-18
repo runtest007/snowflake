@@ -9,13 +9,11 @@
 #include<linux/types.h>
 #include <sys/time.h>
 
-#include "basetype.h"
-#include "logger.h"
-
 #define REMAIN_BIT 22
 #define MIN_SEQ_BIT 7
 #define DEFAULT_MACHINE_BIT 5
 #define DEFAULT_THREAD_BIT 5
+
 
 #define GENERATOR_ID_ERROR -1
 #define GENERATOR_ID_DEFAULT 0
@@ -25,26 +23,27 @@
 class CSnowFlakeGenerator
 {
 	private:
-		u_int16_t u16MachineBitNum;		//æœºå™¨ä½æ•° max 31
-		u_int16_t u16ThreadBitNum;		//çº¿ç¨‹ä½æ•° max 31
+		u_int16_t u16MachineBitNum;  	//»úÆ÷Î»Êımax 31
+		u_int16_t u16ThreadBitNum;   	//Ïß³ÌÎ»Êı	 max 31
 		
-		u_int64_t u64ThreadId;			//çº¿ç¨‹ID ä¸ºäº†ç§»ä½å®šä¹‰æˆu64
-		u_int64_t u64MachineCode;		//æœºå™¨ç  ä¸ºäº†ç§»ä½å®šä¹‰æˆu64
+		u_int64_t u64ThreadId;			//Ïß³ÌID ÎªÁËÒÆÎ»¶¨Òå³Éu64
+		u_int64_t u64MachineCode;		//»úÆ÷Âë ÎªÁËÒÆÎ»¶¨Òå³Éu64
 		
-		u_int16_t u16ThreadOffset;		//çº¿ç¨‹åç§»é‡
-		u_int16_t u16MachineOffset;		//æœºå™¨ç ä¾¿å®œé‡
-		u_int16_t u16TimeStampOffset;		//æ—¶é—´æˆ³åç§»é‡
+		u_int16_t u16ThreadOffset;		//Ïß³ÌÆ«ÒÆÁ¿
+		u_int16_t u16MachineOffset;		//»úÆ÷Âë±ãÒËÁ¿
+		u_int16_t u16TimeStampOffset;	//Ê±¼ä´ÁÆ«ÒÆÁ¿
 
-		u_int16_t u16RemainBit;			//é¢„ç•™ä½æ•°,64 ä½ä¸­ç¬¬ä¸€ä½ä¸ä½¿ç”¨ï¼Œ41 ä½ä¸ºæ¯«ç§’çº§æ—¶é—´æˆ³ï¼Œå22ä½ä¸ºé¢„ç•™ç»™æœºå™¨ç å’Œçº¿ç¨‹idä»¥åŠäº§ç”Ÿçš„åºåˆ—å·ä½¿ç”¨
+		u_int16_t u16RemainBit;			//Ô¤ÁôÎ»Êı,64 Î»ÖĞµÚÒ»Î»²»Ê¹ÓÃ£¬41 Î»ÎªºÁÃë¼¶Ê±¼ä´Á£¬ºó22Î»ÎªÔ¤Áô¸ø»úÆ÷ÂëºÍÏß³ÌidÒÔ¼°²úÉúµÄĞòÁĞºÅÊ¹ÓÃ
 		
-		u_int64_t u64MaxSeq;			//æœ€å¤§åºåˆ—å€¼
-		int64_t i64StartTimeStamp;		//è¿‡å»çš„æŸä¸ªæ—¶é—´æˆ³[2019/04/15/18:00:00]
-		u_int64_t u64Sequence;			//å½“å‰åºå·
+		u_int64_t u64MaxSeq;			//×î´óĞòÁĞÖµ
+		int64_t   i64StartTimeStamp;	//¹ıÈ¥µÄÄ³¸öÊ±¼ä´Á[2019/04/15/18:00:00]
+		u_int64_t u64Sequence;			//µ±Ç°ĞòºÅ
 
-		int64_t i64LastTimeStamp;		//ä¸Šæ¬¡æ—¶é—´æˆ³
+		int64_t i64LastTimeStamp;		//ÉÏ´ÎÊ±¼ä´Á
+
 	private:
 		int64_t GetMillSecTime()
-		{
+        {
 			struct timeval tmval;
 			gettimeofday(&tmval,NULL);
 			return (tmval.tv_sec*1000 + tmval.tv_usec/1000);
@@ -52,7 +51,7 @@ class CSnowFlakeGenerator
 
 		int64_t GetNextMillSecTime()
 		{
-			//ç­‰å¾…ä¸‹ä¸€æ¯«ç§’å‡ºç°
+			//µÈ´ıÏÂÒ»ºÁÃë³öÏÖ
 			while(1)
 			{
 				if(i64LastTimeStamp < GetMillSecTime())
